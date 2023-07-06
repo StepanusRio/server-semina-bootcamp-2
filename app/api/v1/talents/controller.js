@@ -1,12 +1,15 @@
-// Import Status Code
-const { StatusCodes, OK } = require("http-status-codes")
-// Import Services
-const { getAllCategories, createCategories, getOneCategories, updateCategories, deleteCategories } = require("../../../services/mongoose/serviceCategories")
+const { StatusCodes } = require("http-status-codes");
 
-// Create Categories Function
+const { getAllTalent,
+  getOneTalent,
+  createTalent,
+  updateTalent,
+  deleteTalent
+} = require("../../../services/mongoose/serviceTalents");
+
 const create = async (req, res, next) => {
   try {
-    const result = await createCategories(req);
+    const result = await createTalent(req);
     res.status(StatusCodes.CREATED).json({
       error: false,
       result,
@@ -19,7 +22,7 @@ const create = async (req, res, next) => {
 // Get All Categories Fucntions
 const index = async (req, res, next) => {
   try {
-    const result = await getAllCategories(req);
+    const result = await getAllTalent(req);
     res.status(StatusCodes.OK).json({
       error: false,
       data: result,
@@ -32,7 +35,7 @@ const index = async (req, res, next) => {
 // Find Categories Functions
 const find = async (req, res, next) => {
   try {
-    const result = await getOneCategories(req);
+    const result = await getOneTalent(req);
     res.status(StatusCodes.OK).json({
       error: false,
       data: result,
@@ -45,7 +48,7 @@ const find = async (req, res, next) => {
 // Update Categories Functions
 const update = async (req, res, next) => {
   try {
-    const result = await updateCategories(req);
+    const result = await updateTalent(req);
     res.status(StatusCodes.OK).json({
       error: false,
       data: result,
@@ -58,7 +61,7 @@ const update = async (req, res, next) => {
 // Delete Categories Functions
 const destroy = async (req, res, next) => {
   try {
-    const result = await deleteCategories(req);
+    const result = await deleteTalent(req);
     res.status(StatusCodes.OK).json({
       error: false,
       data: result,

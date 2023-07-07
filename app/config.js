@@ -3,6 +3,8 @@ dotenv.config();
 
 module.exports = {
   urlDb: process.env.MONGOODB_CONNECTIONS,
-  jwtExpiration: '24h',
-  jwtSecret: 'jwtSecret',
+  jwtExpiration: process.env.EXPIRED_KEY,
+  jwtSecret: process.env.SECRETE_KEY,
+  gmail: process.env.GMAIL,
+  password: process.env.PASSWORD,
 };

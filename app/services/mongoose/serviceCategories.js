@@ -10,7 +10,7 @@ const getAllCategories = async (req) => {
 const createCategories = async (req) => {
   const { name } = req.body;
   // Check if Category Name has ben registered
-  const check = await Categories.findOne({ name });
+  const check = await Categories.findOne({ name, organizer: req.user.organizer });
   if (check) throw new BadRequestError("Category Name Duplicated");
   // Retrun If Available
   const result = await Categories.create({ name, organizer: req.user.organizer });

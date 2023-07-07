@@ -6,8 +6,8 @@ const { checkingCategories } = require("./serviceCategories");
 const { BadRequestError, NotFoundError } = require("../../errors");
 
 const getAllEvents = async (req) => {
-  const { keyword, category, talent } = req.query;
-  let condition = {};
+  const { keyword, category, talent, status } = req.query;
+  let condition = { organizer: req.user.organizer };
 
   if (keyword) {
     condition = { ...condition, title: { $regex: keyword, $options: 'i' } };
@@ -19,6 +19,10 @@ const getAllEvents = async (req) => {
 
   if (talent) {
     condition = { ...condition, talent: talent };
+  }
+
+  if (['Published', 'Draft'].includes(status)) {
+    condition = { ...condition, statusEvent: status };
   }
 
   const result = await Events.find(condition)
@@ -74,6 +78,7 @@ const createEvents = async (req) => {
     image,
     category,
     talent,
+    organizer: req.user.organizer
   });
 
   return result;
@@ -82,7 +87,7 @@ const createEvents = async (req) => {
 const getOneEvents = async (req) => {
   const { id } = req.params;
 
-  const result = await Events.findOne({ _id: id })
+  const result = await Events.findOne({ _id: id, organizer: req.user.organizer })
     .populate({ path: 'image', select: '_id name' })
     .populate({
       path: 'category',
@@ -130,6 +135,7 @@ const updateEvents = async (req) => {
   // cari Events dengan field name dan id selain dari yang dikirim dari params
   const check = await Events.findOne({
     title,
+    organizer: req.user.organizer,
     _id: { $ne: id },
   });
 
@@ -150,6 +156,7 @@ const updateEvents = async (req) => {
       image,
       category,
       talent,
+      organizer: req.user.organizer
     },
     { new: true, runValidators: true }
   );
@@ -162,15 +169,36 @@ const deleteEvents = async (req) => {
 
   const result = await Events.findOne({
     _id: id,
+    organizer: req.user.organizer
   });
 
   if (!result)
     throw new NotFoundError(`No found event with id :  ${id}`);
 
-  await Events.findOneAndRemove({ _id: id })
+  await Events.findOneAndRemove({ _id: id, organizer: req.user.organizer })
 
   return result;
 };
+
+const changeStatusEvents = async (req) => {
+  const { id } = req.params;
+  const { statusEvent } = req.body;
+
+  if (!['Draft', 'Published'].includes(statusEvent)) {
+    throw new BadRequestError("There is No Option for this statusEvent");
+  }
+
+  const checkEvent = await Events.findOne({
+    _id: id,
+    organizer: req.user.organizer
+  });
+  if (!checkEvent) {
+    throw new NotFoundError(`No found event with id :  ${id}`)
+  }
+  checkEvent.statusEvent = statusEvent;
+  await checkEvent.save();
+  return checkEvent
+}
 
 module.exports = {
   getAllEvents,
@@ -178,4 +206,5 @@ module.exports = {
   getOneEvents,
   updateEvents,
   deleteEvents,
+  changeStatusEvents
 };

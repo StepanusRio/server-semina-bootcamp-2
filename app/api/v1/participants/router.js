@@ -6,7 +6,8 @@ const {
   signin,
   getAllLandingPage,
   getDetailLandingPage,
-  getDashboard
+  getDashboard,
+  checkout
 } = require('./controller');
 const { authenticateParticipant } = require("../../../middlewares/auth")
 
@@ -16,5 +17,6 @@ router.put('/active', activeParticipant);
 router.get('/events', getAllLandingPage);
 router.get('/events/:id', getDetailLandingPage);
 router.get('/orders', authenticateParticipant, getDashboard);
+router.post('/checkout', authenticateParticipant, checkout);
 
 module.exports = router;
